@@ -107,7 +107,6 @@
             color: #ff7200;
             box-shadow: 0 4px 10px rgba(255, 114, 0, 0.4);
         }
-
     </style>
 </head>
 <body class="service-page">
@@ -133,51 +132,68 @@
     <div class="manual-connection-box">
         <h2>Manual Connection</h2>
         <form id="add-device-form">
+            <!-- Input for Device Name -->
             <input type="text" id="device-name" placeholder="Device Name" required>
+            
+            <!-- Input for Device Type -->
             <input type="text" id="device-type" placeholder="Device Type" required>
+            
+            <!-- Input for IP Address -->
             <input type="text" id="ip-address" placeholder="IP Address" required>
+            
+            <!-- Submit Button -->
             <button type="submit">Add Device</button>
         </form>
     </div>
 
     <!-- Firebase Script for Device Addition -->
     <script type="module">
+        // Import Firebase functions from the config file
+        import { auth, db, doc, setDoc, onAuthStateChanged } from './firebase-config.js';
 
-import { auth, db, collection, addDoc, onAuthStateChanged } from './firebase-config.js';
-
-        // Check if user is logged in
+        // Check if the user is logged in
         onAuthStateChanged(auth, (user) => {
             if (user) {
+                // Add an event listener for form submission
                 document.getElementById('add-device-form').addEventListener('submit', async (e) => {
-                    e.preventDefault();
+                    e.preventDefault(); // Prevent the default form submission
 
-                    // Get input values
+                    // Get input values from the form
                     const deviceName = document.getElementById('device-name').value;
                     const deviceType = document.getElementById('device-type').value;
                     const ipAddress = document.getElementById('ip-address').value;
 
                     try {
-                        // Add device data to Firestore
-                        await addDoc(collection(db, 'devices'), {
-                            user_id: user.uid,
+                        // Create a custom ID for the device using the current timestamp
+                        const deviceId = `device-${new Date().getTime()}`;
+
+                        // Add the device data to Firestore using setDoc
+                        await setDoc(doc(db, 'devices', deviceId), {
+                            user_id: user.uid, // Link the device to the user who added it
                             device_name: deviceName,
                             device_type: deviceType,
                             ip_address: ipAddress,
-                            status: 'Connected',
+                            status: 'Connected', // Default status for a new device
+                            created_at: new Date() // Timestamp for when the device was added
                         });
+
+                        // Show a success message
                         alert('Device added successfully!');
+                        
+                        // Redirect to the service page after adding the device
                         window.location.href = 'service.html';
                     } catch (error) {
+                        // Handle any errors that occur during the process
                         console.error('Error adding device: ', error);
                         alert('Failed to add device.');
                     }
                 });
             } else {
+                // If the user is not logged in, show an alert and redirect to the login page
                 alert('User not logged in!');
                 window.location.href = 'index.html';
             }
         });
     </script>
-
 </body>
 </html>
