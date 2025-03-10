@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Connection - SENTRA</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* General styling for better UI */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #0f0c29, #302b63, #24243e);
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Navbar design */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            width: 120px;
+        }
+
+        .menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+        }
+
+        .menu ul li {
+            margin: 0 15px;
+        }
+
+        .menu ul li a {
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .menu ul li a:hover {
+            color: #ff7200;
+        }
+
+        /* Manual Connection Box */
+        .manual-connection-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 12px;
+            max-width: 450px;
+            margin: 50px auto;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .manual-connection-box h2 {
+            color: #ff7200;
+            margin-bottom: 20px;
+        }
+
+        .manual-connection-box input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 16px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .manual-connection-box input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .manual-connection-box input:focus {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .manual-connection-box button {
+            background: #ff7200;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .manual-connection-box button:hover {
+            background: white;
+            color: #ff7200;
+            box-shadow: 0 4px 10px rgba(255, 114, 0, 0.4);
+        }
+
+    </style>
+</head>
+<body class="service-page">
+
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <div class="icon">
+            <img src="https://github.com/Zahra-2/SENTRA/blob/main/logo.png?raw=true" alt="Logo" class="logo">
+        </div>
+        <div class="menu">
+            <ul>
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="service.html">SERVICE</a></li>
+                <li><a href="coming-soon.html">CONTACT</a></li>
+                <li>
+                    <button id="logout-btn" class="logout-btn">LOGOUT</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Manual Connection Form -->
+    <div class="manual-connection-box">
+        <h2>Manual Connection</h2>
+        <form id="add-device-form">
+            <input type="text" id="device-name" placeholder="Device Name" required>
+            <input type="text" id="device-type" placeholder="Device Type" required>
+            <input type="text" id="ip-address" placeholder="IP Address" required>
+            <button type="submit">Add Device</button>
+        </form>
+    </div>
+
+    <!-- Firebase Script for Device Addition -->
+    <script type="module">
+
+import { auth, db, collection, addDoc, onAuthStateChanged } from './firebase-config.js';
+
+        // Check if user is logged in
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('add-device-form').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+
+                    // Get input values
+                    const deviceName = document.getElementById('device-name').value;
+                    const deviceType = document.getElementById('device-type').value;
+                    const ipAddress = document.getElementById('ip-address').value;
+
+                    try {
+                        // Add device data to Firestore
+                        await addDoc(collection(db, 'devices'), {
+                            user_id: user.uid,
+                            device_name: deviceName,
+                            device_type: deviceType,
+                            ip_address: ipAddress,
+                            status: 'Connected',
+                        });
+                        alert('Device added successfully!');
+                        window.location.href = 'service.html';
+                    } catch (error) {
+                        console.error('Error adding device: ', error);
+                        alert('Failed to add device.');
+                    }
+                });
+            } else {
+                alert('User not logged in!');
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+
+</body>
+</html>
