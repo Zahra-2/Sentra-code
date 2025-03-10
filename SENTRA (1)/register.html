@@ -88,74 +88,60 @@
 
 		<script type="module">
 			// Import Firebase functions from our config file
-			import {
-				auth,
-				db,
-				createUserWithEmailAndPassword,
-				doc,
-				setDoc,
-			} from './firebase-config.js';
+import {
+	auth,
+	db,
+	createUserWithEmailAndPassword,
+	doc,
+	setDoc,
+} from './firebase-config.js';
 
-			// Register a new user
-			document
-				.getElementById('register-btn')
-				.addEventListener('click', function () {
-					const name = document.getElementById('name').value;
-					const email = document.getElementById('email').value;
-					const username = document.getElementById('username').value;
-					const password = document.getElementById('password').value;
-					const termsAccepted = document.getElementById('terms').checked;
+document.getElementById('register-btn').addEventListener('click', function () {
+	const name = document.getElementById('name').value;
+	const email = document.getElementById('email').value;
+	const username = document.getElementById('username').value;
+	const password = document.getElementById('password').value;
+	const termsAccepted = document.getElementById('terms').checked;
 
-					const errorMessage = document.getElementById('error-message');
-					const successMessage = document.getElementById('success-message');
+	const errorMessage = document.getElementById('error-message');
+	const successMessage = document.getElementById('success-message');
 
-					errorMessage.textContent = '';
-					successMessage.textContent = '';
+	errorMessage.textContent = '';
+	successMessage.textContent = '';
 
-					// Validate form inputs
-					if (!name || !email || !username || !password) {
-						errorMessage.textContent = 'Please fill in all fields';
-						return;
-					}
+	if (!name || !email || !username || !password) {
+		errorMessage.textContent = 'Please fill in all fields';
+		return;
+	}
 
-					if (!termsAccepted) {
-						errorMessage.textContent =
-							'You must accept the terms and conditions';
-						return;
-					}
+	if (!termsAccepted) {
+		errorMessage.textContent = 'You must accept the terms and conditions';
+		return;
+	}
 
-					// Create user with email and password
-					createUserWithEmailAndPassword(auth, email, password)
-						.then((userCredential) => {
-							// Save additional user data to Firestore
-							const user = userCredential.user;
-							return setDoc(doc(db, 'users', user.uid), {
-								fullName: name,
-								email: email,
-								username: username,
-								createdAt: new Date(),
-							});
-						})
-						.then(() => {
-							successMessage.textContent =
-								'Registration successful! Redirecting to login...';
+	createUserWithEmailAndPassword(auth, email, password)
+		.then((userCredential) => {
+			const user = userCredential.user;
+			return setDoc(doc(db, 'users', user.uid), {
+				fullName: name,
+				email: email,
+				username: username,
+				role: 'user', // تعيين الدور الافتراضي كمستخدم عادي
+				createdAt: new Date(),
+			});
+		})
+		.then(() => {
+			successMessage.textContent = 'Registration successful! Redirecting...';
 
-							// Clear form
-							document.getElementById('name').value = '';
-							document.getElementById('email').value = '';
-							document.getElementById('username').value = '';
-							document.getElementById('password').value = '';
-							document.getElementById('terms').checked = false;
+			setTimeout(() => {
+				window.location.href = 'index.html';
+			}, 2000);
+		})
+		.catch((error) => {
+			errorMessage.textContent = error.message;
+		});
+});
 
-							// Redirect to login page after short delay
-							setTimeout(() => {
-								window.location.href = 'index.html';
-							}, 2000);
-						})
-						.catch((error) => {
-							errorMessage.textContent = error.message;
-						});
-				});
 		</script>
 	</body>
 </html>
