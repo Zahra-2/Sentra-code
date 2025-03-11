@@ -71,6 +71,8 @@
 				margin-bottom: 20px;
 			}
 		</style>
+		<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+		<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 	</head>
 	<body class="welcome-page">
 		<!-- Navbar -->
@@ -113,6 +115,23 @@
 			<p>Last Login: <span id="last-login">Loading...</span></p>
 		</div>
 
+		<!-- Chat Icon -->
+		<div class="chat-icon" id="chat-icon">
+			<ion-icon name="chatbubble-ellipses"></ion-icon>
+		</div>
+
+		<!-- Chat Box -->
+		<div class="chat-box" id="chat-box">
+			<div class="chat-header">
+				<h3>Contact Support</h3>
+				<button id="close-chat">&times;</button>
+			</div>
+			<div class="chat-body">
+				<textarea id="message-input" placeholder="Type your message here..."></textarea>
+				<button id="send-btn">Send</button>
+			</div>
+		</div>
+
 		<script type="module">
 			// Import Firebase functions from our config file
 			import {
@@ -124,6 +143,7 @@
 				getDoc,
 				updateDoc,
 				serverTimestamp,
+				setDoc,
 			} from './firebase-config.js';
 
 			// Get the username from the URL or from Firebase
@@ -184,6 +204,59 @@
 							console.error('Error signing out: ', error);
 						});
 				});
+
+			// Get chat elements
+			const chatIcon = document.getElementById('chat-icon');
+			const chatBox = document.getElementById('chat-box');
+			const closeChat = document.getElementById('close-chat');
+			const sendBtn = document.getElementById('send-btn');
+			const messageInput = document.getElementById('message-input');
+
+			// Toggle chat box visibility
+			chatIcon.addEventListener('click', () => {
+				chatBox.classList.toggle('active');
+			});
+
+			// Close chat box
+			closeChat.addEventListener('click', () => {
+				chatBox.classList.remove('active');
+			});
+
+			// Send message to support team
+			sendBtn.addEventListener('click', async () => {
+				const message = messageInput.value.trim();
+
+				if (message === '') {
+					alert('Please enter a message.');
+					return;
+				}
+
+				const user = auth.currentUser;
+
+				if (user) {
+					try {
+						// Create a unique ID for the message
+						const messageId = new Date().getTime().toString();
+
+						// Send the message using setDoc
+						await setDoc(doc(db, 'support_messages', messageId), {
+							user_email: user.email,
+							message: message,
+							timestamp: serverTimestamp(),
+							status: 'unread',
+						});
+
+						alert('Message sent to support team.');
+						messageInput.value = ''; // Clear the input
+						chatBox.classList.remove('active'); // Close the chat box
+					} catch (error) {
+						console.error('Error sending message:', error);
+						alert('Failed to send message. Please try again.');
+					}
+				} else {
+					alert('You must be logged in to send a message.');
+				}
+			});
 		</script>
 	</body>
 </html>
