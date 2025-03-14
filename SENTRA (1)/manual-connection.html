@@ -1,45 +1,155 @@
-<script type="module">
-    import { auth, db, doc, setDoc, onAuthStateChanged } from './firebase-config.js';
-
-    // Check if the user is logged in
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            console.log("User is logged in:", user.uid);
-
-            // Add an event listener for form submission
-            document.getElementById('add-device-form').addEventListener('submit', async (e) => {
-                e.preventDefault(); // Prevent the default form submission
-
-                // Get input values from the form
-                const deviceName = document.getElementById('device-name').value;
-                const deviceType = document.getElementById('device-type').value;
-                const ipAddress = document.getElementById('ip-address').value;
-
-                console.log("Device Name:", deviceName);
-                console.log("Device Type:", deviceType);
-                console.log("IP Address:", ipAddress);
-
-                try {
-                    // Call Shodan API to scan the IP
-                    const shodanResponse = await fetch(`https://api.shodan.io/shodan/host/${ipAddress}?key=YOUR_SHODAN_API_KEY`);
-                    const shodanData = await shodanResponse.json();
-
-                    console.log("Shodan Data:", shodanData);
-
-                    // Save the scan results to localStorage
-                    localStorage.setItem('scanResults', JSON.stringify(shodanData));
-
-                    // Redirect to the results page
-                    window.location.href = 'scan-results.html';
-                } catch (error) {
-                    console.error('Error scanning network: ', error);
-                    alert('Failed to scan network: ' + error.message);
-                }
-            });
-        } else {
-            console.log("User is not logged in.");
-            alert('User not logged in!');
-            window.location.href = 'index.html';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Connection - SENTRA</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* تصميم الفورم بشكل احترافي */
+        .manual-connection-box {
+            width: 400px;
+            height: auto;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            margin: 50px auto;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
-    });
-</script>
+
+        .manual-connection-box h2 {
+            margin-bottom: 25px;
+            font-size: 24px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .manual-connection-box input {
+            width: 90%; /* تقليل العرض قليلاً */
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 14px;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+        }
+
+        .manual-connection-box input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .manual-connection-box input:focus {
+            border-color:  #ff7200;
+            background-color: rgba(255, 255, 255, 0.15);
+            outline: none;
+        }
+
+        .manual-connection-box button {
+            width: 90%; /* نفس عرض الحقول */
+            background-color:  #ff7200; /* لون الزر الأخضر */
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .manual-connection-box button:hover {
+            background-color: #ff7300b9; /* لون أخضر داكن عند التحويم */
+            transform: translateY(-2px);
+        }
+
+        .manual-connection-box button:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="service-page">
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <div class="icon">
+            <img src="https://github.com/Zahra-2/SENTRA/blob/main/logo.png?raw=true" alt="Logo" class="logo">
+        </div>
+        <div class="menu">
+            <ul>
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="service.html">SERVICE</a></li>
+                <li><a href="coming-soon.html">CONTACT</a></li>
+                <li>
+                    <button id="logout-btn" class="logout-btn">LOGOUT</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Manual Connection Form -->
+    <div class="manual-connection-box">
+        <h2>Manual Connection</h2>
+        <form id="add-device-form">
+            <input type="text" id="device-name" placeholder="Device Name" required>
+            <input type="text" id="device-type" placeholder="Device Type" required>
+            <input type="text" id="ip-address" placeholder="IP Address" required>
+            <button type="submit">Scan and Generate Report</button>
+        </form>
+    </div>
+
+    <script type="module">
+        import { auth, db, doc, setDoc, onAuthStateChanged } from './firebase-config.js';
+
+        // Check if the user is logged in
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log("User is logged in:", user.uid);
+
+                // Add an event listener for form submission
+                document.getElementById('add-device-form').addEventListener('submit', async (e) => {
+                    e.preventDefault(); // Prevent the default form submission
+
+                    // Get input values from the form
+                    const deviceName = document.getElementById('device-name').value;
+                    const deviceType = document.getElementById('device-type').value;
+                    const ipAddress = document.getElementById('ip-address').value;
+
+                    console.log("Device Name:", deviceName);
+                    console.log("Device Type:", deviceType);
+                    console.log("IP Address:", ipAddress);
+
+                    try {
+                        // Simulate a network scan (replace this with your actual scan logic)
+                        const scanResults = [
+                            { ip: "192.168.1.1", mac: "00:11:22:33:44:55", name: "Router" },
+                            { ip: "192.168.1.2", mac: "AA:BB:CC:DD:EE:FF", name: "Smart TV" }
+                        ];
+
+                        // Save the scan results to localStorage
+                        localStorage.setItem('scanResults', JSON.stringify(scanResults));
+
+                        // Redirect to the results page
+                        window.location.href = 'scan-results.html';
+                    } catch (error) {
+                        console.error('Error scanning network: ', error);
+                        alert('Failed to scan network: ' + error.message);
+                    }
+                });
+            } else {
+                console.log("User is not logged in.");
+                alert('User not logged in!');
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>
