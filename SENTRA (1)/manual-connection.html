@@ -32,7 +32,7 @@
         }
 
         .manual-connection-box input {
-            width: 90%; /* تقليل العرض قليلاً */
+            width: 90%;
             padding: 12px;
             margin: 10px 0;
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -54,8 +54,8 @@
         }
 
         .manual-connection-box button {
-            width: 90%; /* نفس عرض الحقول */
-            background-color:  #ff7200; /* لون الزر الأخضر */
+            width: 90%;
+            background-color:  #ff7200;
             color: white;
             border: none;
             padding: 12px 20px;
@@ -68,7 +68,7 @@
         }
 
         .manual-connection-box button:hover {
-            background-color: #ff7300b9; /* لون أخضر داكن عند التحويم */
+            background-color: #ff7300b9;
             transform: translateY(-2px);
         }
 
@@ -102,7 +102,7 @@
             <input type="text" id="device-name" placeholder="Device Name" required>
             <input type="text" id="device-type" placeholder="Device Type" required>
             <input type="text" id="ip-address" placeholder="IP Address" required>
-            <button type="submit">Scan and Generate Report</button>
+            <button type="submit">Add Device</button>
         </form>
     </div>
 
@@ -128,20 +128,35 @@
                     console.log("IP Address:", ipAddress);
 
                     try {
-                        // Simulate a network scan (replace this with your actual scan logic)
-                        const scanResults = [
-                            { ip: "192.168.1.1", mac: "00:11:22:33:44:55", name: "Router" },
-                            { ip: "192.168.1.2", mac: "AA:BB:CC:DD:EE:FF", name: "Smart TV" }
-                        ];
+                        // إنشاء ID مخصص للجهاز
+                        const deviceId = `device-${new Date().getTime()}`;
 
-                        // Save the scan results to localStorage
-                        localStorage.setItem('scanResults', JSON.stringify(scanResults));
+                        // إضافة بيانات الجهاز إلى Firestore
+                        await setDoc(doc(db, 'devices', deviceId), {
+                            user_id: user.uid,
+                            device_name: deviceName,
+                            device_type: deviceType,
+                            ip_address: ipAddress,
+                            status: 'Connected',
+                            created_at: new Date()
+                        });
 
-                        // Redirect to the results page
+                        console.log("Device added successfully!");
+
+                        // استعلام Shodan API للتحقق من الجهاز
+                        const shodanResponse = await fetch(`https://api.shodan.io/shodan/host/${ipAddress}?key=YOUR_SHODAN_API_KEY`);
+                        const shodanData = await shodanResponse.json();
+
+                        console.log("Shodan Data:", shodanData);
+
+                        // حفظ نتائج الفحص في LocalStorage
+                        localStorage.setItem('scanResults', JSON.stringify(shodanData));
+
+                        // إعادة التوجيه إلى صفحة النتائج
                         window.location.href = 'scan-results.html';
                     } catch (error) {
-                        console.error('Error scanning network: ', error);
-                        alert('Failed to scan network: ' + error.message);
+                        console.error('Error processing request: ', error);
+                        alert('Failed to process request: ' + error.message);
                     }
                 });
             } else {
