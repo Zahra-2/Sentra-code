@@ -6,135 +6,6 @@
     <title>Manual Connection - SENTRA</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-        .manual-connection-box {
-            width: 400px;
-            background: rgba(0, 0, 0, 0.8);
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            margin: 50px auto;
-            color: white;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .manual-connection-box h2 {
-            margin-bottom: 25px;
-            font-size: 24px;
-        }
-
-        .manual-connection-box input {
-            width: 90%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            background-color: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 14px;
-        }
-
-        .manual-connection-box input:focus {
-            border-color:  #ff7200;
-            outline: none;
-        }
-
-        .manual-connection-box button {
-            width: 90%;
-            background-color: #ff7200;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 20px;
-            font-size: 16px;
-        }
-    </style>
-</head>
-<body class="service-page">
-    <div class="navbar">
-        <div class="icon">
-            <img src="https://github.com/Zahra-2/SENTRA/blob/main/logo.png?raw=true" alt="Logo" class="logo">
-        </div>
-        <div class="menu">
-            <ul>
-                <li><a href="index.html">HOME</a></li>
-                <li><a href="service.html">SERVICE</a></li>
-                <li><a href="coming-soon.html">CONTACT</a></li>
-                <li>
-                    <button id="logout-btn" class="logout-btn">LOGOUT</button>
-                </li>
-            </ul>
-        </div>
-    </div>
-
-    <div class="manual-connection-box">
-        <h2>Manual Connection</h2>
-        <form id="add-device-form">
-            <input type="text" id="device-name" placeholder="Device Name" required>
-            <input type="text" id="device-type" placeholder="Device Type" required>
-            <input type="text" id="ip-address" placeholder="IP Address" required>
-            <button type="submit">Scan and Save</button>
-        </form>
-    </div>
-
-    <script type="module">
-        import { auth, db, doc, setDoc, onAuthStateChanged } from './firebase-config.js';
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                console.log("User is logged in:", user.uid);
-
-                document.getElementById('add-device-form').addEventListener('submit', async (e) => {
-                    e.preventDefault();
-
-                    const deviceName = document.getElementById('device-name').value;
-                    const deviceType = document.getElementById('device-type').value;
-                    const ipAddress = document.getElementById('ip-address').value;
-
-                    try {
-                        const deviceId = `device-${new Date().getTime()}`;
-
-                        await setDoc(doc(db, 'devices', deviceId), {
-                            user_id: user.uid,
-                            device_name: deviceName,
-                            device_type: deviceType,
-                            ip_address: ipAddress,
-                            status: 'Connected',
-                            created_at: new Date()
-                        });
-
-                        console.log("Device added successfully!");
-                        
-                        const scanResults = [
-                            { ip: "192.168.1.1", mac: "00:11:22:33:44:55", name: "Router" },
-                            { ip: "192.168.1.2", mac: "AA:BB:CC:DD:EE:FF", name: "Smart TV" }
-                        ];
-                        localStorage.setItem('scanResults', JSON.stringify(scanResults));
-                        window.location.href = 'scan-results.html';
-                    } catch (error) {
-                        console.error('Error:', error);
-                        alert('Failed: ' + error.message);
-                    }
-                });
-            } else {
-                console.log("User is not logged in.");
-                alert('User not logged in!');
-                window.location.href = 'index.html';
-            }
-        });
-    </script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manual Connection - SENTRA</title>
-    <link rel="stylesheet" href="styles.css">
-    <style>
         /* تصميم الفورم بشكل احترافي */
         .manual-connection-box {
             width: 400px;
@@ -196,8 +67,12 @@
             transition: background-color 0.3s ease, transform 0.2s ease;
         }
 
+        
+        .manual-connection-box button {
+            background-color:  #ff7200; /
+        }
         .manual-connection-box button:hover {
-            background-color: #ff7300b9; /* لون أخضر داكن عند التحويم */
+            background-color: #ff7300b9; 
             transform: translateY(-2px);
         }
 
@@ -231,7 +106,7 @@
             <input type="text" id="device-name" placeholder="Device Name" required>
             <input type="text" id="device-type" placeholder="Device Type" required>
             <input type="text" id="ip-address" placeholder="IP Address" required>
-            <button type="submit">Scan and Generate Report</button>
+            <button type="submit">Add Device</button>
         </form>
     </div>
 
@@ -257,20 +132,26 @@
                     console.log("IP Address:", ipAddress);
 
                     try {
-                        // Simulate a network scan (replace this with your actual scan logic)
-                        const scanResults = [
-                            { ip: "192.168.1.1", mac: "00:11:22:33:44:55", name: "Router" },
-                            { ip: "192.168.1.2", mac: "AA:BB:CC:DD:EE:FF", name: "Smart TV" }
-                        ];
+                        // Create a custom ID for the device
+                        const deviceId = `device-${new Date().getTime()}`;
+                        console.log("Device ID:", deviceId);
 
-                        // Save the scan results to localStorage
-                        localStorage.setItem('scanResults', JSON.stringify(scanResults));
+                        // Add the device data to Firestore
+                        await setDoc(doc(db, 'devices', deviceId), {
+                            user_id: user.uid,
+                            device_name: deviceName,
+                            device_type: deviceType,
+                            ip_address: ipAddress,
+                            status: 'Connected',
+                            created_at: new Date()
+                        });
 
-                        // Redirect to the results page
-                        window.location.href = 'scan-results.html';
+                        console.log("Device added successfully!");
+                        alert('Device added successfully!');
+                        window.location.href = 'service.html';
                     } catch (error) {
-                        console.error('Error scanning network: ', error);
-                        alert('Failed to scan network: ' + error.message);
+                        console.error('Error adding device: ', error);
+                        alert('Failed to add device: ' + error.message);
                     }
                 });
             } else {
