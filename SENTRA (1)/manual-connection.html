@@ -6,7 +6,6 @@
     <title>Manual Connection - SENTRA</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-        /* تصميم الفورم بشكل احترافي */
         .manual-connection-box {
             width: 400px;
             height: auto;
@@ -32,7 +31,7 @@
         }
 
         .manual-connection-box input {
-            width: 90%; /* تقليل العرض قليلاً */
+            width: 90%;
             padding: 12px;
             margin: 10px 0;
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -40,22 +39,11 @@
             background-color: rgba(255, 255, 255, 0.1);
             color: white;
             font-size: 14px;
-            transition: border-color 0.3s ease, background-color 0.3s ease;
-        }
-
-        .manual-connection-box input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        .manual-connection-box input:focus {
-            border-color:  #ff7200;
-            background-color: rgba(255, 255, 255, 0.15);
-            outline: none;
         }
 
         .manual-connection-box button {
-            width: 90%; /* نفس عرض الحقول */
-            background-color:  #ff7200; /* لون الزر الأخضر */
+            width: 90%;
+            background-color: #ff7200;
             color: white;
             border: none;
             padding: 12px 20px;
@@ -63,26 +51,10 @@
             cursor: pointer;
             margin-top: 20px;
             font-size: 16px;
-            font-weight: 500;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-
-        
-        .manual-connection-box button {
-            background-color:  #ff7200; /
-        }
-        .manual-connection-box button:hover {
-            background-color: #ff7300b9; /* لون أخضر داكن عند التحويم */
-            transform: translateY(-2px);
-        }
-
-        .manual-connection-box button:active {
-            transform: translateY(0);
         }
     </style>
 </head>
 <body class="service-page">
-    <!-- Navigation Bar -->
     <div class="navbar">
         <div class="icon">
             <img src="https://github.com/Zahra-2/SENTRA/blob/main/logo.png?raw=true" alt="Logo" class="logo">
@@ -99,7 +71,6 @@
         </div>
     </div>
 
-    <!-- Manual Connection Form -->
     <div class="manual-connection-box">
         <h2>Manual Connection</h2>
         <form id="add-device-form">
@@ -113,30 +84,17 @@
     <script type="module">
         import { auth, db, doc, setDoc, onAuthStateChanged } from './firebase-config.js';
 
-        // Check if the user is logged in
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                console.log("User is logged in:", user.uid);
-
-                // Add an event listener for form submission
                 document.getElementById('add-device-form').addEventListener('submit', async (e) => {
-                    e.preventDefault(); // Prevent the default form submission
+                    e.preventDefault();
 
-                    // Get input values from the form
                     const deviceName = document.getElementById('device-name').value;
                     const deviceType = document.getElementById('device-type').value;
                     const ipAddress = document.getElementById('ip-address').value;
 
-                    console.log("Device Name:", deviceName);
-                    console.log("Device Type:", deviceType);
-                    console.log("IP Address:", ipAddress);
-
                     try {
-                        // Create a custom ID for the device
                         const deviceId = `device-${new Date().getTime()}`;
-                        console.log("Device ID:", deviceId);
-
-                        // Add the device data to Firestore
                         await setDoc(doc(db, 'devices', deviceId), {
                             user_id: user.uid,
                             device_name: deviceName,
@@ -146,16 +104,18 @@
                             created_at: new Date()
                         });
 
-                        console.log("Device added successfully!");
-                        alert('Device added successfully!');
-                        window.location.href = 'service.html';
+                        const shodanResponse = await fetch(`https://api.shodan.io/shodan/host/${ipAddress}?key=YOUR_SHODAN_API_KEY`);
+                        const shodanData = await shodanResponse.json();
+                        localStorage.setItem('scanResults', JSON.stringify(shodanData));
+                        
+                        alert('Device added and scanned successfully!');
+                        window.location.href = 'scan-results.html';
                     } catch (error) {
-                        console.error('Error adding device: ', error);
-                        alert('Failed to add device: ' + error.message);
+                        console.error('Error:', error);
+                        alert('Failed: ' + error.message);
                     }
                 });
             } else {
-                console.log("User is not logged in.");
                 alert('User not logged in!');
                 window.location.href = 'index.html';
             }
