@@ -10,7 +10,7 @@
       rgba(0, 0, 0, 0.5) 50%,
       rgba(0, 0, 0, 0.5) 50%
     ),
-    url("https://github.com/Zahra-2/SENTRA/blob/main/bg.jpg?raw=true"); /* استبدل 'your-background-image.jpg' باسم الصورة الخاصة بك */
+    url("https://github.com/Zahra-2/SENTRA/blob/main/bg.jpg?raw=true"); 
   background-position: center;
   background-size: cover;
   height: 100vh;
@@ -26,8 +26,6 @@
 }
 
 
-
-/* ضبط نمط النافبار بدون خلفية */
 .navbar {
   width: 100%;
   display: flex;
@@ -96,12 +94,13 @@ css Copy .icon {
 }
 
 .menu {
-  width: 400px;
-  float: left;
+  width: 100%; /* تمتد على عرض الشاشة بالكامل */
   height: 70px;
-  margin-left: 600px; /* إضافة مسافة بين الشعار والقائمة */
+  display: flex;
+  justify-content: flex-end; /* توزيع العناصر */
+  align-items: center; /* توسيط العناصر عموديًا */
+  padding: 0 30px; /* إضافة حشو داخلي */
 }
-
 ul {
   float: left;
   display: flex;
