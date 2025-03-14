@@ -5,6 +5,81 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manual Connection - SENTRA</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* تصميم الفورم بشكل احترافي */
+        .manual-connection-box {
+            width: 400px;
+            height: auto;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            margin: 50px auto;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .manual-connection-box h2 {
+            margin-bottom: 25px;
+            font-size: 24px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .manual-connection-box input {
+            width: 90%; /* تقليل العرض قليلاً */
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 14px;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+        }
+
+        .manual-connection-box input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .manual-connection-box input:focus {
+            border-color:  #ff7200;
+            background-color: rgba(255, 255, 255, 0.15);
+            outline: none;
+        }
+
+        .manual-connection-box button {
+            width: 90%; /* نفس عرض الحقول */
+            background-color:  #ff7200; /* لون الزر الأخضر */
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        
+        .manual-connection-box button {
+            background-color:  #ff7200; /
+        }
+        .manual-connection-box button:hover {
+            background-color: #ff7300b9; /* لون أخضر داكن عند التحويم */
+            transform: translateY(-2px);
+        }
+
+        .manual-connection-box button:active {
+            transform: translateY(0);
+        }
+    </style>
 </head>
 <body class="service-page">
     <!-- Navigation Bar -->
