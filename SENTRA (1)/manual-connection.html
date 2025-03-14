@@ -67,10 +67,6 @@
             transition: background-color 0.3s ease, transform 0.2s ease;
         }
 
-        
-        .manual-connection-box button {
-            background-color:  #ff7200; /
-        }
         .manual-connection-box button:hover {
             background-color: #ff7300b9; /* لون أخضر داكن عند التحويم */
             transform: translateY(-2px);
@@ -106,7 +102,7 @@
             <input type="text" id="device-name" placeholder="Device Name" required>
             <input type="text" id="device-type" placeholder="Device Type" required>
             <input type="text" id="ip-address" placeholder="IP Address" required>
-            <button type="submit">Add Device</button>
+            <button type="submit">Scan and Generate Report</button>
         </form>
     </div>
 
@@ -132,26 +128,20 @@
                     console.log("IP Address:", ipAddress);
 
                     try {
-                        // Create a custom ID for the device
-                        const deviceId = `device-${new Date().getTime()}`;
-                        console.log("Device ID:", deviceId);
+                        // Simulate a network scan (replace this with your actual scan logic)
+                        const scanResults = [
+                            { ip: "192.168.1.1", mac: "00:11:22:33:44:55", name: "Router" },
+                            { ip: "192.168.1.2", mac: "AA:BB:CC:DD:EE:FF", name: "Smart TV" }
+                        ];
 
-                        // Add the device data to Firestore
-                        await setDoc(doc(db, 'devices', deviceId), {
-                            user_id: user.uid,
-                            device_name: deviceName,
-                            device_type: deviceType,
-                            ip_address: ipAddress,
-                            status: 'Connected',
-                            created_at: new Date()
-                        });
+                        // Save the scan results to localStorage
+                        localStorage.setItem('scanResults', JSON.stringify(scanResults));
 
-                        console.log("Device added successfully!");
-                        alert('Device added successfully!');
-                        window.location.href = 'service.html';
+                        // Redirect to the results page
+                        window.location.href = 'scan-results.html';
                     } catch (error) {
-                        console.error('Error adding device: ', error);
-                        alert('Failed to add device: ' + error.message);
+                        console.error('Error scanning network: ', error);
+                        alert('Failed to scan network: ' + error.message);
                     }
                 });
             } else {
