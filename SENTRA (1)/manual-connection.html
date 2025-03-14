@@ -32,7 +32,7 @@
         }
 
         .manual-connection-box input {
-            width: 90%;
+            width: 90%; /* تقليل العرض قليلاً */
             padding: 12px;
             margin: 10px 0;
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -54,8 +54,8 @@
         }
 
         .manual-connection-box button {
-            width: 90%;
-            background-color:  #ff7200;
+            width: 90%; /* نفس عرض الحقول */
+            background-color:  #ff7200; /* لون الزر الأخضر */
             color: white;
             border: none;
             padding: 12px 20px;
@@ -67,8 +67,12 @@
             transition: background-color 0.3s ease, transform 0.2s ease;
         }
 
+        
+        .manual-connection-box button {
+            background-color:  #ff7200; /
+        }
         .manual-connection-box button:hover {
-            background-color: #ff7300b9;
+            background-color: #ff7300b9; /* لون أخضر داكن عند التحويم */
             transform: translateY(-2px);
         }
 
@@ -128,10 +132,11 @@
                     console.log("IP Address:", ipAddress);
 
                     try {
-                        // إنشاء ID مخصص للجهاز
+                        // Create a custom ID for the device
                         const deviceId = `device-${new Date().getTime()}`;
+                        console.log("Device ID:", deviceId);
 
-                        // إضافة بيانات الجهاز إلى Firestore
+                        // Add the device data to Firestore
                         await setDoc(doc(db, 'devices', deviceId), {
                             user_id: user.uid,
                             device_name: deviceName,
@@ -142,21 +147,11 @@
                         });
 
                         console.log("Device added successfully!");
-
-                        // استعلام Shodan API للتحقق من الجهاز
-                        const shodanResponse = await fetch(`https://api.shodan.io/shodan/host/${ipAddress}?key=YOUR_SHODAN_API_KEY`);
-                        const shodanData = await shodanResponse.json();
-
-                        console.log("Shodan Data:", shodanData);
-
-                        // حفظ نتائج الفحص في LocalStorage
-                        localStorage.setItem('scanResults', JSON.stringify(shodanData));
-
-                        // إعادة التوجيه إلى صفحة النتائج
-                        window.location.href = 'scan-results.html';
+                        alert('Device added successfully!');
+                        window.location.href = 'service.html';
                     } catch (error) {
-                        console.error('Error processing request: ', error);
-                        alert('Failed to process request: ' + error.message);
+                        console.error('Error adding device: ', error);
+                        alert('Failed to add device: ' + error.message);
                     }
                 });
             } else {
