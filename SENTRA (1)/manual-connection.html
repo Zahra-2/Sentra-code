@@ -1,211 +1,59 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manual Connection - SENTRA</title>
-    <link rel="stylesheet" href="styles.css">
-    <style>
-        /* تصميم الفورم بشكل احترافي */
-        .manual-connection-box {
-            width: 400px;
-            height: auto;
-            background: rgba(0, 0, 0, 0.8);
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            margin: 50px auto;
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
+<script type="module">
+    import { auth, db, doc, setDoc, onAuthStateChanged, scanLocalNetwork } from './firebase-config.js';
 
-        .manual-connection-box h2 {
-            margin-bottom: 25px;
-            font-size: 24px;
-            font-weight: 600;
-            color: #fff;
-        }
+    // Check if the user is logged in
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            console.log("User is logged in:", user.uid);
 
-        .manual-connection-box input {
-            width: 90%; /* تقليل العرض قليلاً */
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            background-color: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 14px;
-            transition: border-color 0.3s ease, background-color 0.3s ease;
-        }
-
-        .manual-connection-box input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        .manual-connection-box input:focus {
-            border-color:  #ff7200;
-            background-color: rgba(255, 255, 255, 0.15);
-            outline: none;
-        }
-
-        .manual-connection-box button {
-            width: 90%; /* نفس عرض الحقول */
-            background-color:  #ff7200; /* لون الزر الأخضر */
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 20px;
-            font-size: 16px;
-            font-weight: 500;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-
-        .manual-connection-box button:hover {
-            background-color: #ff7300b9; 
-            transform: translateY(-2px);
-        }
-
-        .manual-connection-box button:active {
-            transform: translateY(0);
-        }
-    </style>
-</head>
-<body class="service-page">
-    <!-- Navigation Bar -->
-    <div class="navbar">
-        <div class="icon">
-            <img src="https://github.com/Zahra-2/SENTRA/blob/main/logo.png?raw=true" alt="Logo" class="logo">
-        </div>
-        <div class="menu">
-            <ul>
-                <li><a href="index.html">HOME</a></li>
-                <li><a href="service.html">SERVICE</a></li>
-                <li><a href="coming-soon.html">CONTACT</a></li>
-                <li>
-                    <button id="logout-btn" class="logout-btn">LOGOUT</button>
-                </li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Manual Connection Form -->
-    <div class="manual-connection-box">
-        <h2>Manual Connection</h2>
-        <form id="add-device-form">
-            <input type="text" id="device-name" placeholder="Device Name" required>
-            <input type="text" id="device-type" placeholder="Device Type" required>
-            <input type="text" id="ip-address" placeholder="IP Address" required>
-            <button type="submit">Add Device</button>
-        </form>
-    </div>
-
-    <script type="module">
-        import { auth, db, doc, setDoc, onAuthStateChanged } from './firebase-config.js';
-
-        // Function to get the local IP address using WebRTC
-        function getLocalIPAddress() {
-            return new Promise((resolve, reject) => {
-                const pc = new RTCPeerConnection({ iceServers: [] });
-                pc.createDataChannel(''); // Create a fake data channel
-                pc.createOffer().then(offer => pc.setLocalDescription(offer)).catch(reject);
-
-                pc.onicecandidate = (ice) => {
-                    if (!ice.candidate) return;
-                    const ipRegex = /([0-9]{1,3}(\.[0-9]{1,3}){3})/;
-                    const ipMatch = ipRegex.exec(ice.candidate.candidate);
-                    if (ipMatch) {
-                        resolve(ipMatch[1]);
-                        pc.close();
-                    }
-                };
-            });
-        }
-
-        // Function to scan the local network (simple example)
-        async function scanLocalNetwork() {
-            try {
-                const localIP = await getLocalIPAddress();
-                const baseIP = localIP.split('.').slice(0, 3).join('.') + '.';
-                const ips = [];
-
-                // Scan the first 10 IPs in the local network (for demonstration)
-                for (let i = 1; i <= 10; i++) {
-                    const ip = baseIP + i;
-                    const response = await fetch(`http://${ip}`, { mode: 'no-cors' }).catch(() => null);
-                    if (response) {
-                        ips.push(ip);
-                    }
+            // Automatically scan the network when the page loads
+            scanLocalNetwork().then(ips => {
+                if (ips.length > 0) {
+                    const ipAddressInput = document.getElementById('ip-address');
+                    ipAddressInput.value = ips[0]; // Fill the first detected IP
                 }
+            });
 
-                return ips;
-            } catch (error) {
-                console.error('Error scanning network:', error);
-                return [];
-            }
+            // Add an event listener for form submission
+            document.getElementById('add-device-form').addEventListener('submit', async (e) => {
+                e.preventDefault(); // Prevent the default form submission
+
+                // Get input values from the form
+                const deviceName = document.getElementById('device-name').value;
+                const deviceType = document.getElementById('device-type').value;
+                const ipAddress = document.getElementById('ip-address').value;
+
+                console.log("Device Name:", deviceName);
+                console.log("Device Type:", deviceType);
+                console.log("IP Address:", ipAddress);
+
+                try {
+                    // Create a custom ID for the device
+                    const deviceId = `device-${new Date().getTime()}`;
+                    console.log("Device ID:", deviceId);
+
+                    // Add the device data to Firestore
+                    await setDoc(doc(db, 'devices', deviceId), {
+                        user_id: user.uid,
+                        device_name: deviceName,
+                        device_type: deviceType,
+                        ip_address: ipAddress,
+                        status: 'Connected',
+                        created_at: new Date()
+                    });
+
+                    console.log("Device added successfully!");
+                    alert('Device added successfully!');
+                    window.location.href = 'service.html';
+                } catch (error) {
+                    console.error('Error adding device: ', error);
+                    alert('Failed to add device: ' + error.message);
+                }
+            });
+        } else {
+            console.log("User is not logged in.");
+            alert('User not logged in!');
+            window.location.href = 'index.html';
         }
-
-        // Check if the user is logged in
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                console.log("User is logged in:", user.uid);
-
-                // Automatically scan the network when the page loads
-                scanLocalNetwork().then(ips => {
-                    if (ips.length > 0) {
-                        const ipAddressInput = document.getElementById('ip-address');
-                        ipAddressInput.value = ips[0]; // Fill the first detected IP
-                    }
-                });
-
-                // Add an event listener for form submission
-                document.getElementById('add-device-form').addEventListener('submit', async (e) => {
-                    e.preventDefault(); // Prevent the default form submission
-
-                    // Get input values from the form
-                    const deviceName = document.getElementById('device-name').value;
-                    const deviceType = document.getElementById('device-type').value;
-                    const ipAddress = document.getElementById('ip-address').value;
-
-                    console.log("Device Name:", deviceName);
-                    console.log("Device Type:", deviceType);
-                    console.log("IP Address:", ipAddress);
-
-                    try {
-                        // Create a custom ID for the device
-                        const deviceId = `device-${new Date().getTime()}`;
-                        console.log("Device ID:", deviceId);
-
-                        // Add the device data to Firestore
-                        await setDoc(doc(db, 'devices', deviceId), {
-                            user_id: user.uid,
-                            device_name: deviceName,
-                            device_type: deviceType,
-                            ip_address: ipAddress,
-                            status: 'Connected',
-                            created_at: new Date()
-                        });
-
-                        console.log("Device added successfully!");
-                        alert('Device added successfully!');
-                        window.location.href = 'service.html';
-                    } catch (error) {
-                        console.error('Error adding device: ', error);
-                        alert('Failed to add device: ' + error.message);
-                    }
-                });
-            } else {
-                console.log("User is not logged in.");
-                alert('User not logged in!');
-                window.location.href = 'index.html';
-            }
-        });
-    </script>
-</body>
-</html>
+    });
+</script>
