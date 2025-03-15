@@ -55,7 +55,7 @@
 
         .manual-connection-box button {
             width: 90%; /* نفس عرض الحقول */
-            background-color:  #ff7200; /* لون الزر البرتقالي */
+            background-color:  #ff7200; /* لون الزر الأخضر */
             color: white;
             border: none;
             padding: 12px 20px;
@@ -67,6 +67,10 @@
             transition: background-color 0.3s ease, transform 0.2s ease;
         }
 
+        
+        .manual-connection-box button {
+            background-color:  #ff7200; /
+        }
         .manual-connection-box button:hover {
             background-color: #ff7300b9; 
             transform: translateY(-2px);
@@ -107,20 +111,12 @@
     </div>
 
     <script type="module">
-        import { auth, db, doc, setDoc, onAuthStateChanged, scanLocalNetwork } from './firebase-config.js';
+        import { auth, db, doc, setDoc, onAuthStateChanged } from './firebase-config.js';
 
         // Check if the user is logged in
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 console.log("User is logged in:", user.uid);
-
-                // Automatically scan the network when the page loads
-                scanLocalNetwork().then(ips => {
-                    if (ips.length > 0) {
-                        const ipAddressInput = document.getElementById('ip-address');
-                        ipAddressInput.value = ips[0]; // Fill the first detected IP
-                    }
-                });
 
                 // Add an event listener for form submission
                 document.getElementById('add-device-form').addEventListener('submit', async (e) => {
