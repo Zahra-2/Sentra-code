@@ -37,23 +37,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Function to scan the local network using local-network-scan
-async function scanLocalNetwork() {
-    try {
-        // Import the library dynamically
-        const { scan } = await import('https://cdn.jsdelivr.net/npm/local-network-scan/dist/local-network-scan.min.js');
-
-        // Scan the local network
-        const devices = await scan();
-        const ips = devices.map(device => device.ip);
-
-        return ips;
-    } catch (error) {
-        console.error('Error scanning network:', error);
-        return [];
-    }
-}
-
 // Export functions and instances that will be used in different pages
 export {
 	app,
