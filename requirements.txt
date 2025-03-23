@@ -1,7 +1,0 @@
-dnspython
-fastapi
-python-nmap
-reportlab
-sslyze
-uvicorn
-wapiti3
