@@ -103,14 +103,15 @@
     <div class="manual-connection-box">
         <h2>Manual Connection</h2>
         <form id="add-device-form" action="/scan" method="post">
-            <input type="text" id="device-name" placeholder="Device Name" required name="device_name">
-            <input type="text" id="device-type" placeholder="Device Type" required name="device_type">
-            <input type="text" id="ip-address" placeholder="IP Address" required name="target">
-            <button type="submit">Add Device</button>
+            <input type="text" id="username" name="username" hidden="true">
+            <input type="text" id="device_name" name="device_name" placeholder="Device Name" required >
+            <input type="text" id="device_type" name="device_type" placeholder="Device Type" required >
+            <input type="text" id="ip_address"name="ip_address"  placeholder="IP Address" required >
+            <button id="s" type="submit">Add Device</button>
         </form>
     </div>
 
-    <script type="module">
+     <script type="module">
         import { auth, db, doc, setDoc, onAuthStateChanged } from '/static/firebase-config.js';
 
         // Check if the user is logged in
@@ -119,13 +120,13 @@
                 console.log("User is logged in:", user.uid);
 
                 // Add an event listener for form submission
-                document.getElementById('add-device-form').addEventListener('submit', async (e) => {
-                    e.preventDefault(); // Prevent the default form submission
+                document.getElementById('s').addEventListener('click', async (e) => {
+                    //e.preventDefault(); // Prevent the default form submission
 
                     // Get input values from the form
-                    const deviceName = document.getElementById('device-name').value;
-                    const deviceType = document.getElementById('device-type').value;
-                    const ipAddress = document.getElementById('ip-address').value;
+                    const deviceName = document.getElementById('device_name').value;
+                    const deviceType = document.getElementById('device_type').value;
+                    const ipAddress = document.getElementById('ip_address').value;
 
                     console.log("Device Name:", deviceName);
                     console.log("Device Type:", deviceType);
@@ -148,7 +149,8 @@
 
                         console.log("Device added successfully!");
                         alert('Device added successfully!');
-                        window.location.href = '/service';
+                        
+                        
                     } catch (error) {
                         console.error('Error adding device: ', error);
                         alert('Failed to add device: ' + error.message);
