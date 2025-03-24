@@ -142,9 +142,9 @@ def download():
 
 # API endpoint for scanning (Non-blocking)
 @app.post("/scan")
-async def scan_target(device_name:str = Form(...), device_type:str = Form(...), ip_address: str = Form(...)):
+async def scan_target(background_tasks: BackgroundTasks, device_name:str = Form(...), device_type:str = Form(...), ip_address: str = Form(...)):
+    background_tasks.add_task(perform_scan, ip_address,device_name,device_type)
     print(f"Scan started in the background\nIP address: {ip_address}")
-    await perform_scan(ip_address,device_name,device_type)
     return RedirectResponse("/service")
 
 #@app.post("/dump")
