@@ -1,3 +1,6 @@
+#1
+pip install --upgrade pip setuptools wheel
+
 # Use the official Python image from Docker Hub
 FROM alpine
 
