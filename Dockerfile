@@ -1,32 +1,35 @@
-#1
-pip install --upgrade pip setuptools wheel
-
-# Use the official Python image from Docker Hub
-FROM alpine
+# Use the official Python image with Alpine Linux
+FROM python:3.10-alpine  
 
 # Set the working directory inside the container
-WORKDIR /app
+WORKDIR /app  
 
-RUN apk update && \
-    apk add nmap && \
-    apk add nmap-scripts && \
-    apk add python3 && \
-    apk add py3-pip
-    #rm -rf /var/lib/apt/lists/*
+# Update system and install required dependencies
+RUN apk update && apk add --no-cache \
+    bash \
+    nmap \
+    nmap-scripts \
+    gcc \
+    musl-dev \
+    libffi-dev \
+    openssl-dev \
+    python3-dev \
+    py3-pip \
+    cargo \
+    rust  
 
-# Copy the requirements.txt file and install dependencies
-COPY requirements.txt /app/
+# Upgrade pip, setuptools, and wheel
+RUN pip install --upgrade pip setuptools wheel  
 
-RUN python3 -m venv env && \
-    ./env/bin/pip3 install -r requirements.txt && \
-    ./env/bin/pip3 install jinja2 && \
-    ./env/bin/pip3 install python-multipart
+# Copy requirements.txt and install dependencies
+COPY requirements.txt /app/  
+RUN pip install --no-cache-dir -r requirements.txt  
 
-# Copy the FastAPI app
-COPY . /app/
+# Copy the rest of the application files
+COPY . /app/  
 
-# Expose port 8080 for Cloud Run
-EXPOSE 8080
+# Expose port 8080 for the application
+EXPOSE 8080  
 
-# Command to run the FastAPI app with Uvicorn
-CMD ["./env/bin/uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
+# Run the FastAPI application with Uvicorn
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
