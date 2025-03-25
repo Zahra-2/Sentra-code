@@ -16,8 +16,10 @@ COPY requirements.txt /app/
 
 RUN python3 -m venv env && \
     ./env/bin/pip3 install -r requirements.txt && \
-    ./env/bin/pip3 install jinja2 && \
-    ./env/bin/pip3 install python-multipart
+    # this to comment the "codeset" keyword argument from the language model in wapiti package
+    # it crashes wapiti when left used on alpine linux
+    sed -i "s/codeset/#codeset/" env/lib/python3.12/site-packages/wapitiCore/language/language.py
+
 
 # Copy the FastAPI app
 COPY . /app/
