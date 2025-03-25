@@ -1,11 +1,7 @@
-dnspython
+﻿dnspython
 fastapi
 python-nmap
 reportlab
 sslyze
 uvicorn
 wapiti3
-pip>=25.0.1
-setuptools>=70.0.0
-wheel
-jinja2  # Added to avoid missing template engine erroق
