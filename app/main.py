@@ -145,7 +145,7 @@ def download():
 async def scan_target(device_name:str = Form(...), device_type:str = Form(...), ip_address: str = Form(...)):
     await perform_scan(ip_address,device_name,device_type)
     print(f"Scan started in the background\nIP address: {ip_address}")
-    return RedirectResponse("/service")
+    # return RedirectResponse("/service")
 
 #@app.post("/dump")
 #async def dump(device_name:str = Form(...), device_type:str = Form(...), ip_address: str = Form(...)):
