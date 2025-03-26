@@ -37,7 +37,7 @@ async def run_nmap(target):
 # Function to run a web vulnerability scan using Wapiti
 async def run_web_scan(target):
     
-    subprocess.run(f"./env/bin/wapiti -u {str(target)} -p http://192.168.43.1:44355 -f json -o reuslts.json > /dev/null")
+    subprocess.run(f"./env/bin/wapiti -u {str(target)} -f json -o reuslts.json > /dev/null")
 
 # Function to run an SSL scan asynchronously
 async def run_ssl_scan(target):
