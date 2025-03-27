@@ -26,7 +26,8 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 async def run_nmap(target):
     nm = nmap.PortScanner()
     nm.scan(target, arguments="-sV -O")
-    nm_results = nm.csv() 
+    nm_results = nm.csv()
+    print(nm_results)
     csv_file = StringIO(nm_results)
     csv_reader = csv.DictReader(csv_file, delimiter=';')
     results = [row for row in csv_reader]
