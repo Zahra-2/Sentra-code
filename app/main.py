@@ -74,7 +74,7 @@ async def run_dns_scan(target):
 # Background task handler
 async def perform_scan(target,device_name,device_type):
     results = {}
-
+    print("Starting Nmap Scan")
     results["Nmap"] = await run_nmap(target)
     # results["Nmap"] = nmap_results
 
